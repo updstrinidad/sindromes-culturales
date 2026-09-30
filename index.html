@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Asocia los Síndromes Culturales</title>
+<style>
+:root{--brown:#5b3527;--brown2:#8a5a44;--cream:#f5eee8;--paper:#fffaf6;--ok:#2f6b45;--bad:#a53f36}
+*{box-sizing:border-box} body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#e9ddd4,#f8f3ef);color:#34251f;min-height:100vh}
+header{background:linear-gradient(100deg,#3e251d,#7b4b37);color:white;padding:22px 5%;box-shadow:0 4px 15px #0002} header h1{margin:0;font-size:28px} header p{margin:6px 0 0;opacity:.9}
+main{max-width:1200px;margin:auto;padding:24px}.panel{background:#fffaf6;border-radius:18px;padding:20px;box-shadow:0 8px 30px #5b35271c;margin-bottom:18px}.top{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between}.stats{display:flex;gap:10px;flex-wrap:wrap}.badge{background:#eadbd1;padding:9px 13px;border-radius:999px;font-weight:700}button{border:0;border-radius:10px;padding:10px 15px;font-weight:700;cursor:pointer;background:var(--brown);color:white}button.secondary{background:#b28a74}.instructions{line-height:1.5}.game{display:grid;grid-template-columns:1fr 1.35fr;gap:20px}.col h2{font-size:17px;margin:0 0 12px}.card{border:2px solid #d8c1b3;background:white;border-radius:12px;padding:13px;margin:9px 0;cursor:pointer;transition:.15s;line-height:1.35}.card:hover{transform:translateY(-1px);border-color:#9d7059}.card.selected{border-color:var(--brown);background:#efe1d8}.card.matched{border-color:#74a585;background:#e8f3eb;cursor:default}.card.wrong{animation:shake .25s;border-color:var(--bad);background:#fbe9e7}@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+#message{font-weight:700;min-height:24px;margin-top:10px}.success{color:var(--ok)}.error{color:var(--bad)}.footer{text-align:center;color:#765c50;font-size:13px;padding:10px}.result{display:none;text-align:center;padding:25px}.result h2{font-size:28px;color:var(--brown)}
+@media(max-width:800px){.game{grid-template-columns:1fr}header h1{font-size:22px}}
+</style></head>
+<body><header><h1>Asocia los Síndromes Culturales</h1><p>Actividad interactiva de Etnopsicología</p></header>
+<main>
+<section class="panel instructions"><div class="top"><div><b>Instrucciones:</b> selecciona un síndrome de la izquierda y luego la descripción que le corresponde. La aplicación te indicará si la asociación es correcta. Hay 15 conceptos en total: 8 de Latinoamérica, 2 de sociedades modernas y 5 de otros contextos culturales.</div></div></section>
+<section class="panel"><div class="top"><div class="stats"><span class="badge">Aciertos: <span id="score">0</span>/15</span><span class="badge">Intentos: <span id="attempts">0</span></span></div><button onclick="shuffleDescriptions()">Mezclar descripciones</button></div><div id="message"></div></section>
+<section class="panel game" id="game"><div class="col"><h2>1. Síndromes</h2><div id="terms"></div></div><div class="col"><h2>2. Características / descripción</h2><div id="defs"></div></div></section>
+<section class="panel result" id="result"><h2>¡Actividad completada!</h2><p id="finalText"></p></section>
+<div class="footer">Etnopsicología · Síndromes ligados a la cultura</div></main>
+<script>
+const data=[
+['Alcanzo o Pacha','Parálisis temporal, pesadez, fatiga y debilidad asociadas culturalmente a una conexión inadecuada con la tierra o Pachamama.'],
+['Amartelo, morriña o melancolía','Tristeza profunda, llanto, nostalgia y añoranza por la tierra natal, vinculadas al duelo migratorio y la separación del hogar.'],
+['Ataque de nervios','Episodios de llanto, gritos, temblores, desmayos o desesperación relacionados con estrés, conflictos familiares o acontecimientos emocionales intensos.'],
+['Empacho','Malestar digestivo, dolor abdominal, hinchazón y falta de apetito atribuidos culturalmente a comida que queda “pegada” o no se digiere adecuadamente.'],
+['Machu wayra / Limbu wayra','Dolor en cintura y piernas, insomnio, pesadillas y desgano atribuidos en la cosmovisión andina al contacto con un viento maligno.'],
+['Mal de espanto','Insomnio, pérdida de apetito, fatiga, palpitaciones y ansiedad después de un susto intenso, interpretado como pérdida del alma o desequilibrio energético.'],
+['Susto, espanto o Mancharisqa','Insomnio, fatiga, pérdida de apetito, ansiedad y otros malestares tras un impacto emocional severo; puede explicarse culturalmente como separación parcial o total del alma.'],
+['Rayo','Parálisis temporal, fiebre, convulsiones o alteraciones del comportamiento tras estar cerca de un rayo, interpretado en la cosmovisión andina como un fenómeno con poder espiritual.'],
+['Síndrome de París','Ansiedad intensa, desorientación, mareos o sensación de irrealidad en visitantes que experimentan una fuerte decepción al contrastar una imagen idealizada de París con la realidad.'],
+['Síndrome de Stendhal o Florencia','Mareos, palpitaciones, confusión y ansiedad ante una exposición intensa a gran cantidad de arte o belleza en poco tiempo.'],
+['Koro','Miedo intenso a que los genitales se retraigan dentro del cuerpo y provoquen consecuencias graves, acompañado de ansiedad o pánico.'],
+['Hwa-Byung','Acumulación de ira reprimida que puede expresarse mediante opresión en el pecho, sensación de calor y episodios de llanto.'],
+['Taijin Kyofusho','Temor persistente a avergonzar o incomodar a otras personas mediante la mirada, el olor corporal, la voz o la propia presencia.'],
+['Latah','Respuesta exagerada ante sobresaltos, con repetición involuntaria de palabras o imitación automática de movimientos y acciones.'],
+['Kufungisisa','Angustia caracterizada por preocupación excesiva, pensamientos repetitivos, fatiga e insomnio; en comunidades Shona se relaciona con “pensar demasiado”.']
+];
+let selected=null,score=0,attempts=0,order=[];
+const terms=document.getElementById('terms'), defs=document.getElementById('defs'), msg=document.getElementById('message');
+function shuffle(a){return [...a].sort(()=>Math.random()-.5)}
+function render(){terms.innerHTML='';defs.innerHTML='';data.forEach((x,i)=>{let d=document.createElement('div');d.className='card';d.textContent=x[0];d.dataset.id=i;d.onclick=()=>pickTerm(d,i);terms.appendChild(d)}); order.forEach(i=>{let d=document.createElement('div');d.className='card';d.textContent=data[i][1];d.dataset.id=i;d.onclick=()=>pickDef(d,i);defs.appendChild(d)})}
+function pickTerm(el,id){if(el.classList.contains('matched'))return;document.querySelectorAll('#terms .card').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');selected={el,id}}
+function pickDef(el,id){if(!selected||el.classList.contains('matched')){msg.textContent='Primero selecciona un síndrome.';msg.className='error';return}attempts++;document.getElementById('attempts').textContent=attempts;if(selected.id===id){selected.el.classList.remove('selected');selected.el.classList.add('matched');el.classList.add('matched');score++;document.getElementById('score').textContent=score;msg.textContent='¡Correcto! Asociación realizada.';msg.className='success';selected=null;if(score===data.length){document.getElementById('game').style.display='none';document.getElementById('result').style.display='block';document.getElementById('finalText').textContent=`Completaste las 15 asociaciones en ${attempts} intentos.`}}else{el.classList.add('wrong');selected.el.classList.add('wrong');msg.textContent='No corresponde. Revisa las características e intenta nuevamente.';msg.className='error';setTimeout(()=>{el.classList.remove('wrong');if(selected)selected.el.classList.remove('wrong')},350)}}
+function shuffleDescriptions(){order=shuffle(data.map((_,i)=>i));render();selected=null;msg.textContent='Descripciones mezcladas.';msg.className=''}
+function resetGame(){score=0;attempts=0;selected=null;document.getElementById('score').textContent='0';document.getElementById('attempts').textContent='0';document.getElementById('game').style.display='grid';document.getElementById('result').style.display='none';msg.textContent='';order=shuffle(data.map((_,i)=>i));render()}
+resetGame();
+</script></body></html>
